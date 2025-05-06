@@ -1,16 +1,26 @@
 on: [ push ]
 
+
+permissions:
+  contents: read # Permission to read repository contents
+  actions: read  # Permission to read actions
+
 jobs:
   hello_world_job:
-    permissions:
-      contents: read
-      packages: read
     runs-on: ubuntu-latest
-    name: A job to say hello
     steps:
-      - uses: actions/checkout@v4
+      # First, check out the current repository
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+      # Then, check out the private action repository
+      - name: Checkout private actions repository
+        uses: actions/checkout@v4
+        with:
+          repository: jontutcher/gha-composite-test
+          ref: v0.0.1  # Or main, or a specific commit SHA
+          path: ./.github/myaction
       - id: foo
-        uses: jontutcher/gha-composite-test@v0.0.1
+        uses: ./.github/myaction
         with:
           who-to-greet: 'Mona the Octocat'
       - run: echo random-number "$RANDOM_NUMBER"
